@@ -4,6 +4,16 @@ import discord
 import logging
 from discord.ext import commands
 from openpyxl import load_workbook
+import csv
+
+# Example 1: Reading a CSV file and iterating through rows as lists
+with open('Bread_List.csv', 'r') as file:
+    reader = csv.reader(file)
+    try:
+        for row in reader:
+            print(row[0])
+    except:
+            print("ERROR")
 
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 
@@ -51,4 +61,4 @@ async def setnick(ctx, member: discord.Member, new_nickname: str):
         # await ctx.send(f"An error occurred while changing the nickname: {e}")
         return
 
-client.run('xxx', log_handler=handler)
+client.run('sss', log_handler=handler)
