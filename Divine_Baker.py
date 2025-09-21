@@ -1,6 +1,10 @@
 # This example requires the 'message_content' intent.
 
 import discord
+import logging
+
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -19,4 +23,4 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-client.run('xxx')
+client.run('xxx', log_handler=handler)
