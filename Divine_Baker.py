@@ -26,6 +26,9 @@ def get_rand_breadname():
 def contains_elem(list, elem):
     return (elem in list)
 
+# command to run the file
+# py -3 Divine_Baker.py
+
 @client.event
 async def on_ready():
     # Iterate through columns from 'A' to 'C' (min_col=1, max_col=3)
@@ -39,6 +42,7 @@ async def on_ready():
     for guild in client.guilds:
         inUseNames = []
         availableNames = []
+        # get all names in use
         print(f"Guild: {guild.name} (ID: {guild.id})")
         print("Members:")
         for member in guild.members:
@@ -46,10 +50,10 @@ async def on_ready():
             # add current nicknames
             if member.nick != None:
                 inUseNames.append(member.nick)
-            
-            if member.nick == None:
-                await setnick(commands.context, member, "okayLilBro")
             # print(f"  - {member.name} (ID: {member.id})")
+
+        for member in guild.members:
+            pass
 
 @client.event
 async def on_message(message):
