@@ -4,6 +4,7 @@ import discord
 import logging
 from discord.ext import commands
 from openpyxl import load_workbook
+import random
 
 workbook = load_workbook('Bread List.xlsx')
 sheet = workbook.active
@@ -20,8 +21,13 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 client = discord.Client(intents=intents)
 
-def get_rand_breadname():
-    pass
+inUseNames = {}
+
+def get_rand_breadname(availableNames):
+    length = len(availableNames)
+    randomIndex = random.randint(0, length - 1)
+    return availableNames[randomIndex]
+    
 
 def contains_elem(list, elem):
     return (elem in list)
@@ -40,7 +46,7 @@ async def on_ready():
 
     print(f'We have logged in as {client.user}')
     for guild in client.guilds:
-        inUseNames = []
+        guildInUseNames = []
         availableNames = []
         # get all names in use
         print(f"Guild: {guild.name} (ID: {guild.id})")
@@ -49,11 +55,24 @@ async def on_ready():
             # print(member.name, client.user.name)
             # add current nicknames
             if member.nick != None:
-                inUseNames.append(member.nick)
-            # print(f"  - {member.name} (ID: {member.id})")
+                guildInUseNames.append(member.nick)
 
+            # print(f"  - {member.name} (ID: {member.id})")
+        inUseNames[guild.name] = guildInUseNames
+        # go through each bread name
+        for breadName in breadTypes:
+            # check if they are not already in use in the server
+            if not breadName in guildInUseNames:
+                # add the bread name to the available names
+                availableNames.append(breadName)
+        # go through each member
         for member in guild.members:
-            pass
+            # check if the member has a nickname
+            if member.nick == None:
+                randomName = get_rand_breadname(availableNames) # get a random bread from available ones
+                availableNames.remove(randomName) # remove it from available names
+                inUseNames[guild.name].append(randomName) # add the name to the global in use names database 
+                setnick(commands.context, member, randomName) # set the members nick name
 
 @client.event
 async def on_message(message):
@@ -69,13 +88,13 @@ async def setnick(ctx, member: discord.Member, new_nickname: str):
     # """Changes the nickname of a specified member."""
     try:
         await member.edit(nick=new_nickname)
-        # await ctx.send(f'Successfully changed {member.display_name}\'s nickname to {new_nickname}.')
+        await ctx.send(f'Successfully changed {member.display_name}\'s nickname to {new_nickname}.')
         return
     except discord.Forbidden:
-        # await ctx.send("I don't have permission to change that user's nickname.")
+        await ctx.send("I don't have permission to change that user's nickname.")
         return
     except discord.HTTPException as e:
-        # await ctx.send(f"An error occurred while changing the nickname: {e}")
+        await ctx.send(f"An error occurred while changing the nickname: {e}")
         return
 
 client.run('xxx', log_handler=handler)
