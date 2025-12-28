@@ -97,4 +97,22 @@ async def setnick(ctx, member: discord.Member, new_nickname: str):
         await ctx.send(f"An error occurred while changing the nickname: {e}")
         return
 
+@bot.command()
+async def joined(ctx, member: discord.Member = None):
+    """Shows when a member joined the server."""
+    guild = member.guild
+    guildNamesInUse = inUseNames[guild.name]
+    if member is None:
+        member = ctx.author # If no member is specified, default to the command invoker
+
+    namesInUse = inUseNames[guild.name] # get all names that are already being used for that guild
+
+    newBreadName = get_rand_breadname(namesInUse) # get a random bread name that is not in use
+
+    setnick(commands.context, member, newBreadName)
+
+    joined_date = member.joined_at.strftime("%b %d, %Y at %I:%M %p UTC")
+    await ctx.send(f"{member.mention} joined this server on {joined_date}.")
+
+
 client.run('xxx', log_handler=handler)
